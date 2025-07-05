@@ -2,10 +2,10 @@ var http = require("http");
 var fs = require("fs");
 var url = require("url");
 var qs = require("querystring");
-const path = require("path");
 
-function TemplateHtml(title, list, body, control) {
-  return `
+var template = {
+  Html: function (title, list, body, control) {
+    return `
         <!doctype html>
         <html>
         <head>
@@ -20,25 +20,23 @@ function TemplateHtml(title, list, body, control) {
         </body>
         </html>
         `;
-}
-
-function templateList(filelist) {
-  var i = 0;
-  var list = `<ul>`;
-  while (i < filelist.length) {
-    list = list + `<li><a href="/?id=${filelist[i]}">${filelist[i]}</a></li>`;
-    i = i + 1;
-  }
-  list = list + "</ul>";
-
-  return list;
-}
+  },
+  list: function (filelist) {
+    var list = `<ul>`;
+    var i = 0;
+    while (i < filelist.length) {
+      list = list + `<li><a href="/?id=${filelist[i]}">${filelist[i]}</a></li>`;
+      i = i + 1;
+    }
+    list = list + "</ul>";
+    return list;
+  },
+};
 
 var app = http.createServer(function (request, response) {
   var _url = request.url;
   var queryData = url.parse(_url, true).query;
   var pathname = url.parse(_url, true).pathname;
-  var title = queryData.id;
 
   if (pathname === "/") {
     if (queryData.id === undefined) {
@@ -46,15 +44,15 @@ var app = http.createServer(function (request, response) {
         console.log(filelist);
         var title = "welcome";
         var description = "Hello, Node.js";
-        var list = templateList(filelist);
-        var template = TemplateHtml(
+        var list = template.list(filelist);
+        var html = template.Html(
           title,
           list,
           `<h2>${title}</h2>${description}`,
           `<a href="/create">create</a>`
         );
         response.writeHead(200);
-        response.end(template);
+        response.end(html);
       });
     } else {
       fs.readdir(`./data`, function (err, filelist) {
@@ -63,8 +61,8 @@ var app = http.createServer(function (request, response) {
           "utf8",
           function (err, description) {
             var title = queryData.id;
-            var list = templateList(filelist);
-            var template = TemplateHtml(
+            var list = template.list(filelist);
+            var html = template.Html(
               title,
               list,
               `
@@ -78,7 +76,7 @@ var app = http.createServer(function (request, response) {
               `
             );
             response.writeHead(200);
-            response.end(template);
+            response.end(html);
           }
         );
       });
@@ -86,8 +84,8 @@ var app = http.createServer(function (request, response) {
   } else if (pathname === "/create") {
     fs.readdir("./data", function (err, filelist) {
       var title = queryData.id;
-      var list = templateList(filelist);
-      var template = TemplateHtml(
+      var list = template.list(filelist);
+      var html = template.Html(
         title,
         list,
         `
@@ -102,7 +100,7 @@ var app = http.createServer(function (request, response) {
         ""
       );
       response.writeHead(200);
-      response.end(template);
+      response.end(html);
     });
   } else if (pathname === "/create_process") {
     var body = "";
@@ -123,8 +121,8 @@ var app = http.createServer(function (request, response) {
     fs.readFile(`data/${queryData.id}`, "utf8", function (err, description) {
       fs.readdir(`./data`, function (err, filelist) {
         var title = queryData.id;
-        var list = templateList(filelist);
-        var template = TemplateHtml(
+        var list = template.list(filelist);
+        var html = template.Html(
           title,
           list,
           `
@@ -140,7 +138,7 @@ var app = http.createServer(function (request, response) {
           `<a href="/create">create</a> <a href="/update?id=${title}">update</a> <a href="/delete?id=${title}">delete</a>`
         );
         response.writeHead(200);
-        response.end(template);
+        response.end(html);
       });
     });
   } else if (pathname === "/update_process") {
