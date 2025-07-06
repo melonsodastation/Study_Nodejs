@@ -4,6 +4,7 @@ var url = require("url");
 var qs = require("querystring");
 var template = require("./lib/template.js");
 var path = require("path");
+import sanitizeHtml from "sanitize-html";
 
 var app = http.createServer(function (request, response) {
   var _url = request.url;
@@ -104,7 +105,7 @@ var app = http.createServer(function (request, response) {
             <p><input type="submit"></p>
             </form>
             `,
-          `<a href="/create">create</a> <a href="/update?id=${title}">update</a> <a href="/delete?id=${title}">delete</a>`
+          `<a href="/create">create</a> <a href="/update?id=${title}">update</a>`
         );
       });
       response.writeHead(200);

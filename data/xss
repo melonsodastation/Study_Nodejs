@@ -1,0 +1,4 @@
+//입력받은 정보를 출력할때 필터링을 거친다.
+&lt;script&gt;
+alert("hello");
+&lt;/script&gt;
