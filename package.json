@@ -23,4 +23,3 @@
     "sanitize-html": "^2.17.0"
   }
 }
-//내가 sanitize를 쓰고 있으니까 그건 despendencies(의존)인거임
